@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=SageMath
+GenericName=Sage
+Comment=Open source mathematical software..
+Exec=AppRun
+Icon=sage_icon
+Type=Application
+Terminal=true
+Categories=Science
+
