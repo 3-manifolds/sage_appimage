@@ -1,4 +1,3 @@
-# sage_setup: distribution = sagemath-repl
 r"""
 Format Sage documentation for viewing with IPython and the notebook
 
@@ -13,8 +12,6 @@ AUTHORS:
 - John Palmieri (2009-06-28): don't use 'find' -- use Python (os.walk, re.search) instead.
 - Simon King (2011-09): Use os.linesep, avoid destruction of embedding information,
   enable nodetex in a docstring. Consequently use sage_getdoc.
-
-- Marc Culler (2023--): modifications for Sage_macOS
 
 TESTS:
 
@@ -51,9 +48,9 @@ from sage.misc.temporary_file import tmp_dir
 from sage.misc.viewer import browser
 from sage.misc import sageinspect
 import sage.version
-from sage.env import SAGE_DOC, SAGE_SRC
+from sage.env import SAGE_DOC, SAGE_SRC, SAGE_LOCAL
 
-site_root = os.path.join(os.environ['SAGE_LOCAL'], 'share','documentation')
+site_root = os.path.join(SAGE_LOCAL, 'share', 'documentation')
 try:
     from cocoserver import StaticServer
     doc_server = StaticServer(site_root)
@@ -128,6 +125,7 @@ nonmath_substitutes = [
     ('note{', 'NOTE: '),
 ]
 
+
 def _rmcmd(s, cmd, left='', right=''):
     """
     Remove the LaTeX command ``cmd`` from the string ``s``.  This
@@ -135,13 +133,13 @@ def _rmcmd(s, cmd, left='', right=''):
 
     INPUT:
 
-    - ``s`` -- (string) string from which to remove the command
+    - ``s`` -- string; string from which to remove the command
 
-    - ``cmd`` -- (string) command to be removed.  This should be a
+    - ``cmd`` -- string; command to be removed.  This should be a
       command which takes a single argument, like 'emph' or 'url'; the
       command is removed, but its argument is not.
 
-    - ``left``, ``right`` -- (string, default: '') add these
+    - ``left``, ``right`` -- string (default: ``''``); add these
       strings at the left and right ends of the command. See the
       examples.
 
@@ -208,13 +206,11 @@ def detex(s, embedded=False):
     - ``s`` -- string
     - ``embedded`` -- boolean (default: ``False``)
 
-    If ``embedded`` is False, then do the replacements in both
-    ``math_substitutes`` and ``nonmath_substitutes``.  If True, then
+    If ``embedded`` is ``False``, then do the replacements in both
+    ``math_substitutes`` and ``nonmath_substitutes``.  If ``True``, then
     only do ``nonmath_substitutes``.
 
-    OUTPUT:
-
-    string
+    OUTPUT: string
 
     EXAMPLES::
 
@@ -272,7 +268,7 @@ def skip_TESTS_block(docstring):
 
     INPUT:
 
-    - ``docstring``, a string
+    - ``docstring`` -- string
 
     A "TESTS" block is a block starting "TESTS:" (or
     the same with two colons), on a line on its own, and ending either
@@ -679,10 +675,7 @@ def format(s, embedded=False):
     EXAMPLES::
 
         sage: from sage.misc.sagedoc import format
-        sage: identity_matrix(2).rook_vector.__doc__[191:263]                           # needs sage.modules
-        'Let `A` be an `m` by `n` (0,1)-matrix. We identify `A` with a chessboard'
-
-        sage: format(identity_matrix(2).rook_vector.__doc__[191:263])                   # needs sage.modules
+        sage: format('Let `A` be an `m` by `n` (0,1)-matrix. We identify `A` with a chessboard')
         'Let A be an m by n (0,1)-matrix. We identify A with a chessboard\n'
 
     If the first line of the string is 'nodetex', remove 'nodetex' but
@@ -707,7 +700,7 @@ def format(s, embedded=False):
     We check that the todo Sphinx extension is correctly activated::
 
         sage: sage.misc.sagedoc.format(sage.combinat.ranker.on_fly.__doc__)             # needs sphinx
-        "   Returns ...  Todo: add tests as in combinat::rankers\n"
+        "...Return ...Todo: add tests as in combinat::rankers\n"
 
     In the following use case, the ``nodetex`` directive would have been ignored prior
     to :issue:`11815`::
@@ -894,10 +887,10 @@ def _search_src_or_doc(what, string, extra1='', extra2='', extra3='',
 
     INPUT:
 
-    - ``what``: either ``'src'`` or ``'doc'``, according to whether you
-      are searching the documentation or source code.
+    - ``what`` -- either ``'src'`` or ``'doc'``, according to whether you
+      are searching the documentation or source code
     - the rest of the input is the same as :func:`search_src`,
-      :func:`search_doc`, and :func:`search_def`.
+      :func:`search_doc`, and :func:`search_def`
 
     OUTPUT:
 
@@ -1061,45 +1054,47 @@ def search_src(string, extra1='', extra2='', extra3='', extra4='',
 
     INPUT:
 
-    - ``string`` -- a string to find in the Sage source code.
+    - ``string`` -- string to find in the Sage source code
 
     - ``extra1``, ..., ``extra5`` -- additional strings to require when
-      searching.  Lines must match all of these, as well as ``string``.
+      searching.  Lines must match all of these, as well as ``string``
 
-    - ``whole_word`` (default: ``False``) -- if True, search for
+    - ``whole_word`` -- (default: ``False``) if ``True``, search for
       ``string`` and ``extra1`` (etc.) as whole words only.  This
       assumes that each of these arguments is a single word, not a
       regular expression, and it might have unexpected results if used
       with regular expressions.
 
-    - ``ignore_case`` (default: ``True``) -- if False, perform a
+    - ``ignore_case`` -- boolean (default: ``True``); if ``False``, perform a
       case-sensitive search
 
-    - ``multiline`` (default: ``False``) -- if True, search more
+    - ``multiline`` -- (default: ``False``) if ``True``, search more
       than one line at a time.  In this case, print any matching file
       names, but don't print line numbers.
 
-    - ``interact`` (default: ``True``) -- if ``False``, return
+    - ``interact`` -- boolean (default: ``True``); if ``False``, return
       a string with all the matches. Otherwise, this function returns
       ``None``, and the results are displayed appropriately, according
       to whether you are using the notebook or the command-line
       interface. You should not ordinarily need to use this.
 
-    - ``path_re`` (default: '') -- regular expression which
-      the filename (including the path) must match.
+    - ``path_re`` -- (default: ``''``) regular expression which
+      the filename (including the path) must match
 
-    - ``module`` (default: 'sage') -- the module in which to
+    - ``module`` -- (default: ``'sage'``) the module in which to
       search.  The default is 'sage', the entire Sage library.  If
       ``module`` doesn't start with "sage", then the links in the
       notebook output may not function.
 
-    OUTPUT: If ``interact`` is False, then return a string with all of
+    OUTPUT:
+
+    If ``interact`` is ``False``, then return a string with all of
     the matches, separated by newlines.  On the other hand, if
-    ``interact`` is True (the default), there is no output.  Instead:
+    ``interact`` is ``True`` (the default), there is no output.  Instead:
     at the command line, the search results are printed on the screen
     in the form ``filename:line_number:line of text``, showing the
     filename in which each match occurs, the line number where it
-    occurs, and the actual matching line.  (If ``multiline`` is True,
+    occurs, and the actual matching line.  (If ``multiline`` is ``True``,
     then only the filename is printed for each match.)  The file paths
     in the output are relative to ``$SAGE_SRC``.  In the
     notebook, each match produces a link to the actual file in which
@@ -1108,9 +1103,9 @@ def search_src(string, extra1='', extra2='', extra3='', extra4='',
     The ``string`` and ``extraN`` arguments are treated as regular
     expressions, as is ``path_re``, and errors will be raised if they
     are invalid. The matches will be case-insensitive unless
-    ``ignore_case`` is False.
+    ``ignore_case`` is ``False``.
 
-    .. note::
+    .. NOTE::
 
         The ``extraN`` parameters are present only because
         ``search_src(string, *extras, interact=False)``
@@ -1146,10 +1141,11 @@ def search_src(string, extra1='', extra2='', extra3='', extra4='',
     The following produces an error because the string 'fetch(' is a
     malformed regular expression::
 
-        sage: print(search_src(" fetch(", "def", interact=False))
-        Traceback (most recent call last):
-        ...
-        error: missing ), unterminated subpattern at position 6
+        sage: try:
+        ....:     print(search_src(" fetch(", "def", interact=False))
+        ....: except Exception as e:
+        ....:     print(e)
+        missing ), unterminated subpattern at position 6
 
     To fix this, *escape* the parenthesis with a backslash::
 
@@ -1197,7 +1193,6 @@ def search_src(string, extra1='', extra2='', extra3='', extra4='',
         misc/sagedoc.py:... len(search_src("matrix", interact=False).splitlines())...
         misc/sagedoc.py:... len(search_src("matrix", module="sage.calculus", interact=False).splitlines())...
         misc/sagedoc.py:... len(search_src("matrix", path_re="calc"...
-        misc/sagedoc.py:... print(search_src(" fetch(", "def", interact=False))...
         misc/sagedoc.py:... print(search_src(r" fetch\(", "def", interact=False))...
         misc/sagedoc.py:... print(search_src(r" fetch\(", "def", "pyx", interact=False))...
         misc/sagedoc.py:... s = search_src('Matrix', path_re='matrix', interact=False); s.find('x') > 0...
@@ -1226,7 +1221,6 @@ def search_src(string, extra1='', extra2='', extra3='', extra4='',
         matrix/matrix0.pyx:607:        Get the 2 x 3 submatrix of M starting at row index and column index
         matrix/matrix0.pyx:924:        Set the 2 x 2 submatrix of M, starting at row index and column
         matrix/matrix0.pyx:933:        Set the 2 x 3 submatrix of M starting at row index and column
-
     """
     return _search_src_or_doc('src', string, extra1=extra1, extra2=extra2,
                               extra3=extra3, extra4=extra4, extra5=extra5,
@@ -1243,7 +1237,7 @@ def search_doc(string, extra1='', extra2='', extra3='', extra4='',
 
     INPUT: same as for :func:`search_src`.
 
-    OUTPUT: same as for :func:`search_src`.
+    OUTPUT: same as for :func:`search_src`
 
     EXAMPLES:
 
@@ -1284,9 +1278,9 @@ def search_def(name, extra1='', extra2='', extra3='', extra4='',
 
     INPUT: same as for :func:`search_src`.
 
-    OUTPUT: same as for :func:`search_src`.
+    OUTPUT: same as for :func:`search_src`
 
-    .. note::
+    .. NOTE::
 
         The regular expression used by this function only finds function
         definitions that are preceded by spaces, so if you use tabs on a
@@ -1333,11 +1327,11 @@ def format_search_as_html(what, results, search):
 
     INPUT:
 
-    - ``what`` -- (string) what was searched (source code or
+    - ``what`` -- string; what was searched (source code or
       documentation)
-    - ``results`` -- (string or list) the results of the search as a string or list of
+    - ``results`` -- string or list; the results of the search as a string or list of
       search results
-    - ``search`` -- (string or list) what was being searched for, either as a
+    - ``search`` -- string or list; what was being searched for, either as a
       string which is taken verbatim, or a list of multiple search terms if
       there were more than one
 
@@ -1418,8 +1412,8 @@ def my_getsource(obj, oname=''):
 
     - ``obj`` -- a Sage object, function, etc.
 
-    - ``oname`` -- str (optional). A name under which the object is
-      known. Currently ignored by Sage.
+    - ``oname`` -- string (optional); a name under which the object is
+      known. Currently ignored by Sage
 
     OUTPUT:
 
@@ -1459,7 +1453,7 @@ class _sage_doc:
       "browse_sage_doc(identity_matrix, 'html').  ``output`` can be
       either 'html' or 'rst': the form of the output.  ``view`` is
       only relevant if ``output`` is ``html``; in this case, if
-      ``view`` is True (its default value), then open up the
+      ``view`` is ``True`` (its default value), then open up the
       documentation in a web browser.  Otherwise, just output the
       documentation as a string.
 
@@ -1468,7 +1462,7 @@ class _sage_doc:
         sage: browse_sage_doc._open("reference", testing=True)[0]                       # needs sagemath_doc_html
         'http://localhost:8000/doc/live/reference/index.html'
         sage: browse_sage_doc(identity_matrix, 'rst')[-107:-47]                         # needs sage.modules
-        'Full MatrixSpace of 3 by 3 sparse matrices over Integer Ring'
+        '...Full MatrixSpace of 3 by 3 sparse matrices...'
     """
     def __init__(self):
         """
@@ -1629,11 +1623,11 @@ class _sage_doc:
 
         INPUT:
 
-        - ``name`` -- string, name of the documentation
+        - ``name`` -- string; name of the documentation
 
-        - ``testing`` -- boolean (default: ``False``): if True,
-          then just return the URL and path-name for this document;
-          don't open the web browser.
+        - ``testing`` -- boolean (default: ``False``); if ``True``,
+          then just return the URL and path-name for this document
+          (don't open the web browser)
 
         EXAMPLES::
 
@@ -1651,7 +1645,7 @@ class _sage_doc:
             os.system(browser() + " " + path)
         else:
             os.system(browser() + " " + "https://doc.sagemath.org/html/en/%s/index.html"%name)
-        
+
         if testing:
             return (url, path)
 

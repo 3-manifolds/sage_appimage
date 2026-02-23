@@ -7,25 +7,15 @@ if [ -z "${APPIMAGE}" ]; then
     export ARGV0="$0"
 fi
 
-# Try to make sure we have a browser.
-if [ -n $BROWSER ]; then
-    if [ -e /usr/bin/wslview ]; then
-	export BROWSER=/usr/bin/wslview
-    elif [ -e /usr/bin/firefox ]; then
-	     export BROWSER=/usr/bin/firefox
-    fi
-fi
-
-	
 # Resolve the calling command (preserving symbolic links).
 export APPIMAGE_COMMAND=$(command -v -- "$ARGV0")
 
 if [ $# == 1 ] && [ $1 == --install ]; then
-    if [ -z "${APPIMAGE}" ]; then
+    if [[ -z "${APPIMAGE}" ]]; then
         echo "The --install option requires a packed AppImage."
         exit 1
     fi
-    if [ -z "${XDG_DATA_HOME}" ]; then
+    if [[ -z "${XDG_DATA_HOME}" ]]; then
         XDG_DATA_HOME="$HOME/.local/share"
     fi
     mkdir -p "${XDG_DATA_HOME}/applications"
@@ -36,6 +26,16 @@ else
     rm -f /var/tmp/sage-10.7
     ln -s "${APPDIR}/app_root" /var/tmp/sage-10.7
     export TERM=xterm-color
-    "${APPDIR}/app_root/local/bin/sage" $@
+
+    if ! [[ -z SAGE_BROWSER ]]; then
+	export BROWSER="${SAGE_BROWSER}"
+    elif echo `uname -r` | grep microsoft >/dev/null; then
+	export BROWSER="${APPDIR}/wsl_browser"
+    fi
 fi
+
+echo "===================== SAGE_BROWSER: ${SAGE_BROWSER}"
+echo "===================== BROWSER: ${BROWSER}"
+
+"${APPDIR}/app_root/local/bin/sage" $@
 

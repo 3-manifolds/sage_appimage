@@ -2,6 +2,7 @@ FROM quay.io/pypa/manylinux2014_x86_64
 RUN yum install -y less.x86_64
 RUN yum install -y zip.x86_64
 RUN yum install -y perl-IPC-Cmd
+RUN yum install -y perl-Time-Piece
 RUN yum install -y bzip2-devel.x86_64
 RUN yum install -y ncurses-devel.x86_64
 RUN yum install -y libXft-devel.x86_64
