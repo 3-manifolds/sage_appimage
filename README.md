@@ -8,7 +8,7 @@ systems which use glibc version 2.17 or later.
 **Linux Installation**
 1. Download an AppImage for SageMath `X.Y` from the Releases page.
 2. Create `~/bin` (if necessary): `mkdir -p ~/bin`
-3. Move the AppImage for Sage X.Y into `~/bin`: `mv ~/Downloads/SageMath-X.Y-x86_64.AppImage ~/bin`
+3. Move the AppImage for Sage `X.Y` into `~/bin`: `mv ~/Downloads/SageMath-X.Y-x86_64.AppImage ~/bin`
 4. Make it executable: `chmod +x ~/bin/SageMath-X.Y-x86_64.AppImage`
 5. Create a convenient symlink: `ln -s SageMath-X.Y-x86_64.AppImage ~/bin/sage`
 
@@ -45,5 +45,5 @@ Sage.  You can arrange to launch a notebook by editing the
 sagemath.desktop file to add `-n` on the `Exec` line.
 
 The AppImages include the python tkinter module, which works in Sage
-(after running %gui tk) on a linux desktop.  It does not work in WSL
+(after running `%gui tk`) on a linux desktop.  It does not work in WSL
 since it requires an X server.
