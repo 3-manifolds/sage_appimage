@@ -10,9 +10,9 @@ fi
 # Resolve the calling command (preserving symbolic links).
 export APPIMAGE_COMMAND=$(command -v -- "$ARGV0")
 
-if [ $# == 1 ] && [ $1 == --install ]; then
+if [ $# == 1 ] && [ $1 == --install-desktop ]; then
     if [[ -z "${APPIMAGE}" ]]; then
-        echo "The --install option requires a packed AppImage."
+        echo "The --install-desktop option requires a packed AppImage."
         exit 1
     fi
     if [[ -z "${XDG_DATA_HOME}" ]]; then
@@ -23,19 +23,22 @@ if [ $# == 1 ] && [ $1 == --install ]; then
     sed -e "s|Exec=.*|Exec=${APPIMAGE}|" "${APPDIR}/sagemath.desktop" >"${XDG_DATA_HOME}/applications/sagemath.desktop"
     cp "${APPDIR}/sage_icon.svg" "${XDG_DATA_HOME}/icons"
 else
-    rm -f /var/tmp/sage-10.7
-    ln -s "${APPDIR}/app_root" /var/tmp/sage-10.7
-    export TERM=xterm-color
-
-    if ! [[ -z SAGE_BROWSER ]]; then
-	export BROWSER="${SAGE_BROWSER}"
-    elif echo `uname -r` | grep microsoft >/dev/null; then
-	export BROWSER="${APPDIR}/wsl_browser"
+    # SAGE_BROWSER always overrides BROWSER if SAGE_BROWSER is defined.
+    # On WSL if SAGE_BROWSER is not set we use the Windows default browser.
+    
+    if [[ -z "${SAGE_BROWSER}" ]]; then
+	if echo `uname -r` | grep microsoft >/dev/null; then
+	    BROWSER="${APPDIR}/wsl_browser"
+	fi
+    else 
+	BROWSER="${SAGE_BROWSER}"
     fi
+    rm -f /var/tmp/sage-10.8
+    ln -s "${APPDIR}/app_root" /var/tmp/sage-10.8
+    export TERM=xterm-color
+    export BROWSER
+    export PATH=/var/tmp/sage-10.8/local/bin:$PATH
+    "${APPDIR}"/app_root/local/bin/sage $@
 fi
 
-echo "===================== SAGE_BROWSER: ${SAGE_BROWSER}"
-echo "===================== BROWSER: ${BROWSER}"
-
-"${APPDIR}/app_root/local/bin/sage" $@
 
