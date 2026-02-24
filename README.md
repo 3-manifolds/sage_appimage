@@ -1,4 +1,4 @@
-# sage_appimage
+# SageMath Appimages
 
 This repoository provides AppImages for running SageMath on linux,
 including linux running in Windows WSL2.  The releases are built on a
