@@ -6,11 +6,11 @@ manylinux2014 docker image, so the AppImage should run on linux
 systems which use glibc version 2.17 or later.
 
 **Linux Installation**
-1. Download SageMath-x86_64.AppImage from the assets.
+1. Download an AppImage for SageMath `X.Y` from the Releases page.
 2. Create `~/bin` (if necessary): `mkdir -p ~/bin`
-3. Move the AppImage into `~/bin`: `mv ~/Downloads/SageMath-x86_64.AppImage ~/bin`
-4. Make it executable: `chmod +x ~/bin/SageMath-x86_64.AppImage`
-5. Create a convenient symlink: `ln -s SageMath-x86_64.AppImage ~/bin/sage`
+3. Move the AppImage for Sage X.Y into `~/bin`: `mv ~/Downloads/SageMath-X.Y-x86_64.AppImage ~/bin`
+4. Make it executable: `chmod +x ~/bin/SageMath-X.Y-x86_64.AppImage`
+5. Create a convenient symlink: `ln -s SageMath-X.Y-x86_64.AppImage ~/bin/sage`
 
 You will need to have `~/bin` in your `PATH` to run sage conveniently.
 This should happen automatically, but you may need to log out and log
@@ -31,8 +31,8 @@ The commands listed above should be run in your WSL powershell,
 except that you should replace step 3 by:
 
 3'.  Move the AppImage into
-`~/bin`: `mv /mnt/c/Users/<your id>/Downloads/SageMath-x86_64.AppImage
-~/bin` (Replace `<your id>` with your Windows user id.)
+`~/bin`: `mv /mnt/c/Users/<your id>/Downloads/SageMath-X.Y-x86_64.AppImage
+~/bin` (Replace `<your id>` with your Windows user id and `X.Y` by the Sage version.)
 
 **Usage**
 
