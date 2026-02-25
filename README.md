@@ -1,6 +1,6 @@
 # SageMath Appimages
 
-This repoository provides AppImages for running SageMath on linux,
+This repository provides AppImages for running SageMath on linux,
 including linux running in Windows WSL2.  The releases are built on a
 manylinux2014 docker image, so the AppImage should run on linux
 systems which use glibc version 2.17 or later.
